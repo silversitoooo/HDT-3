@@ -11,7 +11,7 @@ import java.util.Scanner;
 public class InfixCalculatorApp {
     public static void main(String[] args) {
         InfixCalculatorApp app = new InfixCalculatorApp();
-        String infixExpr = app.readExpressionFromFile("expression.txt");
+        String[] infixExprs = app.readExpressionsFromFile("expressions.txt");
 
         // Obtenemos las opciones de pila y lista del usuario
         StackChoice stackChoice = app.getUserStackChoice();
@@ -29,29 +29,38 @@ public class InfixCalculatorApp {
 
         Calculator calculator = Calculator.getInstance();
         calculator.setStack(stack);
-        String postfixExpr = calculator.convertToPostfix(infixExpr);
-        System.out.println("Expresión posfija: " + postfixExpr);
-        double result = calculator.evaluatePostfix(postfixExpr);
-        System.out.println("Resultado: " + result);
+
+        // Evaluar cada expresión infija
+        for (String infixExpr : infixExprs) {
+            try {
+                String postfixExpr = calculator.convertToPostfix(infixExpr);
+                System.out.println("Expresión infija: " + infixExpr);
+                System.out.println("Expresión posfija: " + postfixExpr);
+                double result = calculator.evaluatePostfix(postfixExpr);
+                System.out.println("Resultado: " + result);
+            } catch (Exception e) {
+                System.err.println("Error al evaluar la expresión '" + infixExpr + "': " + e.getMessage());
+            }
+        }
     }
 
     /**
-     * Lee una expresión desde un archivo
+     * Lee expresiones desde un archivo
      * @param filename El nombre del archivo
-     * @return La expresión leída
+     * @return Las expresiones leídas
      */
-    private String readExpressionFromFile(String filename) {
+    private String[] readExpressionsFromFile(String filename) {
         StringBuilder content = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                content.append(line);
+                content.append(line).append("\n");
             }
         } catch (IOException e) {
             System.err.println("Error al leer el archivo: " + e.getMessage());
-            return "3+4*2/(1-5)"; // Expresión predeterminada en caso de error
+            return new String[]{ "3+4*2/(1-5)", "(5+3)*2^3/(10-2*(1+1))" }; // Expresiones predeterminadas en caso de error
         }
-        return content.toString();
+        return content.toString().split("\n");
     }
 
     /**

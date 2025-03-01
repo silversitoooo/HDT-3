@@ -92,7 +92,7 @@ public class Calculator {
                 evalStack.push(Double.parseDouble(token));
             } else if (isOperator(token.charAt(0))) {
                 if (evalStack.size() < 2) {
-                    throw new IllegalStateException("Expresión posfija mal formada");
+                    throw new IllegalStateException("Expresión posfija mal formada: operador '" + token + "' sin suficientes operandos");
                 }
 
                 double operand2 = evalStack.pop();
@@ -100,11 +100,13 @@ public class Calculator {
 
                 double result = performOperation(token.charAt(0), operand1, operand2);
                 evalStack.push(result);
+            } else {
+                throw new IllegalArgumentException("Token inválido en la expresión posfija: " + token);
             }
         }
 
         if (evalStack.size() != 1) {
-            throw new IllegalStateException("Expresión posfija inválida");
+            throw new IllegalStateException("Expresión posfija inválida: no se obtuvo un único resultado.");
         }
 
         return evalStack.pop();

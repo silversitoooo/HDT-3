@@ -19,14 +19,14 @@ public class CalculatorTest {
     @Test
     public void testConvertToPostfix() {
         String infix = "3+4*2/(1-5)";
-        String expected = "34*2/15-+";
+        String expected = "3 4 2 * 1 5 - / +";
         String actual = calculator.convertToPostfix(infix);
         assertEquals(expected, actual);
     }
 
     @Test
     public void testEvaluatePostfix() {
-        String postfix = "34*2/15-+";
+        String postfix = "3 4 2 * 1 5 - / +";
         double expected = 1.0;
         double actual = calculator.evaluatePostfix(postfix);
         assertEquals(expected, actual, 0.001);
@@ -52,4 +52,3 @@ public class CalculatorTest {
         });
     }
 }
-
