@@ -1,34 +1,69 @@
 package org.example;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * Demonstrates how to convert and evaluate infix expressions.
+ * Programa principal para convertir y evaluar expresiones matemáticas.
  */
 public class Main {
+
     public static void main(String[] args) {
-        String expr1 = "3+4*2/(1-5)";
-        String expr2 = "(5+3)*2^3/(10-2*(1+1))";
+        // Prueba con expresiones hardcodeadas para diagnóstico
+        evaluateExpression("3+4*2/(1-5)");
+        evaluateExpression("(5+3)*2^3/(10-2*(1+1))");
 
-        String postfix1 = InfixToPostfix.convert(expr1);
-        String postfix2 = InfixToPostfix.convert(expr2);
-
-        System.out.println("Expresión infija: " + expr1);
-        System.out.println("Posfija creada: " + postfix1);
+        // Leer expresiones desde el archivo
         try {
-            double result1 = PostfixEvaluator.evaluate(postfix1);
-            System.out.println("Resultado de evaluar \"" + expr1 + "\": " + result1);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Error al evaluar \"" + expr1 + "\": " + e.getMessage());
+            List<String> expressions = readExpressionsFromFile("expression.txt");
+            for (String expr : expressions) {
+                evaluateExpression(expr);
+                System.out.println("-----------------------------");
+            }
+        } catch (IOException e) {
+            System.out.println("Error al leer el archivo: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Lee expresiones línea por línea desde un archivo.
+     */
+    private static List<String> readExpressionsFromFile(String filename) throws IOException {
+        List<String> expressions = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (!line.trim().isEmpty()) {
+                    expressions.add(line.trim());
+                }
+            }
+        }
+        return expressions;
+    }
+
+    /**
+     * Evalúa una única expresión infija.
+     */
+    private static void evaluateExpression(String infixExpr) {
+        System.out.println("Expresión infija: " + infixExpr);
+        String postfixExpr = InfixToPostfix.convert(infixExpr);
+
+        // Verificar si hay error en la conversión
+        if (postfixExpr.startsWith("Error")) {
+            System.out.println(postfixExpr);
+            return;
         }
 
-        System.out.println("-------------------------------------------");
+        System.out.println("Expresión posfija: " + postfixExpr);
 
-        System.out.println("Expresión infija: " + expr2);
-        System.out.println("Posfija creada: " + postfix2);
         try {
-            double result2 = PostfixEvaluator.evaluate(postfix2);
-            System.out.println("Resultado de evaluar \"" + expr2 + "\": " + result2);
+            double result = PostfixEvaluator.evaluate(postfixExpr);
+            System.out.println("Resultado: " + result);
         } catch (IllegalArgumentException e) {
-            System.out.println("Error al evaluar \"" + expr2 + "\": " + e.getMessage());
+            System.out.println("Error al evaluar la expresión '" + infixExpr + "': " + e.getMessage());
         }
     }
 }
